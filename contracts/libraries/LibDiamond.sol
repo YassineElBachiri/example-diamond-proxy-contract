@@ -1,5 +1,6 @@
-// SPDX-License-Identifier: MIT
-pragma solidity =0.8.9;
+//SPDX-License-Identifier: MIT
+pragma solidity >=0.7.0 <0.9.0;
+pragma experimental ABIEncoderV2;
 
 /******************************************************************************\
 * Original Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
@@ -9,7 +10,7 @@ pragma solidity =0.8.9;
 /******************************************************************************/
 
 library LibDiamond {
-    /// Storage slots of this diamond
+    // Storage slots of this diamond
     // load the storage of the diamond contract at a specific location:
     bytes32 constant DIAMOND_STORAGE_POSITION = keccak256("diamond.standard.diamond.storage");
 

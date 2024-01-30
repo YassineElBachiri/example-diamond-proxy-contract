@@ -1,5 +1,6 @@
-/// SPDX-License-Identifier: MIT
-pragma solidity =0.8.9;
+//SPDX-License-Identifier: MIT
+pragma solidity >=0.7.0 <0.9.0;
+pragma experimental ABIEncoderV2;
 
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
@@ -62,9 +63,9 @@ library LibNFT {
 
         _beforeTokenTransfer(address(0), to, tokenId, 1);
         
-        unchecked {
-            ds._balances[to] += 1;
-        }
+        //unchecked
+        ds._balances[to] += 1;
+      
 
         ds._owners[tokenId] = to;
 
@@ -87,10 +88,10 @@ library LibNFT {
         // Clear approvals from the previous owner
         delete ds._tokenApprovals[tokenId];
 
-        unchecked {
+      //unchecked
             ds._balances[from] -= 1;
             ds._balances[to] += 1;
-        }
+       
         ds._owners[tokenId] = to;
 
         emit Transfer(from, to, tokenId);
@@ -111,11 +112,11 @@ library LibNFT {
         // Clear approvals
         delete ds._tokenApprovals[tokenId];
 
-        unchecked {
-            // Cannot overflow, as that would require more tokens to be burned/transferred
-            // out than the owner initially received through minting and transferring in.
-            ds._balances[owner] -= 1;
-        }
+        //unchecked 
+        // Cannot overflow, as that would require more tokens to be burned/transferred
+        // out than the owner initially received through minting and transferring in.
+        ds._balances[owner] -= 1;
+        
         delete ds._owners[tokenId];
 
         emit Transfer(owner, address(0), tokenId);

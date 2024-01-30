@@ -1,5 +1,6 @@
-/// SPDX-License-Identifier: MIT
-pragma solidity =0.8.9;
+//SPDX-License-Identifier: MIT
+pragma solidity >=0.7.0 <0.9.0;
+pragma experimental ABIEncoderV2;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
@@ -48,10 +49,10 @@ library LibERC20 {
         Storage storage ds = getStorage();
 
         ds._totalSupply += amount;
-        unchecked {
+        //unchecked 
             // Overflow not possible: balance + amount is at most totalSupply + amount, which is checked above.
             ds._balances[account] += amount;
-        }
+        
         emit Transfer(address(0), account, amount);
 
         _erc20_afterTokenTransfer(address(0), account, amount);
@@ -89,10 +90,10 @@ library LibERC20 {
 
         uint256 fromBalance = ds._balances[from];
         require(fromBalance >= amount, "ERC20: transfer amount exceeds balance");
-        unchecked {
+        //unchecked 
             ds._balances[from] = fromBalance - amount;
             ds._balances[to] += amount;
-        }
+        
 
         emit Transfer(from, to, amount);
 
@@ -122,10 +123,10 @@ library LibERC20 {
 
         uint256 fromBalance = ds._balances[from];
         require(fromBalance >= amount, "ERC20: transfer amount exceeds balance");
-        unchecked {
+        //unchecked 
             ds._balances[from] = fromBalance - amount;
             ds._balances[to] += amount;
-        }
+        
 
         emit Transfer(from, to, amount);
 
@@ -140,9 +141,9 @@ library LibERC20 {
         uint256 currentAllowance = _erc20allowance(owner, spender);
         if (currentAllowance != type(uint256).max) {
             require(currentAllowance >= amount, "ERC20: insufficient allowance");
-            unchecked {
-                _erc20_approve(owner, spender, currentAllowance - amount);
-            }
+            //unchecked 
+            _erc20_approve(owner, spender, currentAllowance - amount);
+            
         }
     }
 
