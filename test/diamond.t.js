@@ -250,4 +250,101 @@ describe('Create a Simple Diamond Contract', async function () {
     expect(await erc20Facet.erc20balanceOf(alice.address)).to.equal(90)
     expect(await erc20Facet.erc20balanceOf(nftFacet.address)).to.equal(40)
   })
+
+
+    /*================================================================*/
+    /***************             ERC1155 FACET               ************/
+     /*================================================================*/
+
+    // ...
+
+describe('ERC1155 Facet', function () {
+  let diamond;
+  let erc1155Facet;
+  let alice;
+  let bob;
+
+  before(async function () {
+    [alice, bob] = await ethers.getSigners();
+
+    // Deploy the Diamond Contract
+    const Diamond = await ethers.getContractFactory('Diamond');
+    diamond = await Diamond.deploy(alice.address);
+    await diamond.deployed();
+
+    // Deploy the ERC1155 Facet
+    const ERC1155Facet = await ethers.getContractFactory('ERC1155Facet');
+    erc1155Facet = await ERC1155Facet.deploy();
+    await erc1155Facet.deployed();
+
+    // Add the ERC1155 Facet to the Diamond Contract
+    const selectors = getSelectors(erc1155Facet);
+    await diamond.diamondCut(
+      {
+        facetAddress: erc1155Facet.address,
+        functionSelectors: selectors,
+      },
+      { gasLimit:   8000000 }
+    );
+
+    it('should mint the nft as expected and be able to transfer it', async () => {
+      const erc1155Facet = await ethers.getContractAt('ERC1155Facet', diamond.address)
+  
+      await expect(erc1155Facet.ownerOf(0)).to.be.revertedWith("ERC1155: invalid token ID")
+      await expect(erc1155Facet.ownerOf(1)).to.be.revertedWith("ERC1155: invalid token ID")
+      expect(await erc1155Facet.balanceOf(alice.address)).to.equal(0)
+  
+      tx = await erc1155Facet.mint(alice.address, 1)
+      await tx.wait()
+  
+      // confirm that alice got the NFT
+      expect(await erc1155Facet.balanceOf(alice.address)).to.equal(1)
+      await expect(erc1155Facet.ownerOf(0)).to.be.revertedWith("ERC1155: invalid token ID")
+      expect(await erc1155Facet.ownerOf(1)).to.equal(alice.address)
+  
+      tx = await erc1155Facet.connect(alice).transfer(bob.address, 1)
+      await tx.wait()
+  
+      expect(await erc1155Facet.balanceOf(alice.address)).to.equal(0)
+      expect(await erc1155Facet.balanceOf(bob.address)).to.equal(1)
+  
+      // bob burns it
+      tx = await erc1155Facet.connect(bob).burn(1)
+      await tx.wait()
+  
+      // it's gone:
+      expect(await erc1155Facet.balanceOf(alice.address)).to.equal(0)
+      expect(await erc1155Facet.balanceOf(bob.address)).to.equal(0)
+  
+      // mint more
+      tx = await erc1155Facet.mint(alice.address, 0)
+      await tx.wait()
+      tx = await erc1155Facet.mint(bob.address, 1)
+      await tx.wait()
+      tx = await erc1155Facet.mint(bob.address, 2)
+      await tx.wait()
+  
+      // make sure balances and ownership are correct
+      expect(await erc1155Facet.balanceOf(alice.address)).to.equal(1)
+      expect(await erc1155Facet.balanceOf(bob.address)).to.equal(2)
+      
+      expect(await erc1155Facet.ownerOf(0)).to.equal(alice.address)
+      expect(await erc1155Facet.ownerOf(1)).to.equal(bob.address)
+      expect(await erc1155Facet.ownerOf(2)).to.equal(bob.address)
+    })
+  });
+
+  
+
+  
+
+
+
+  // Add more tests as needed for other ERC11555 functions
+});
+
+// ...
+
+
+
 })
